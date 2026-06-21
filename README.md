@@ -1,79 +1,88 @@
 # Predictor Mundial V4.0
 
-Un orquestador predictivo avanzado para partidos de fútbol, diseñado específicamente para proyectar resultados de la Copa Mundial 2026.
-
-## 🧠 Arquitectura de Ponderaciones
-El sistema fusiona tres grandes cerebros predictivos:
-
-1. **Sabiduría del Mercado (40%)**: Extrae y pondera las cuotas de casas de apuestas tradicionales y mercados predictivos.
-2. **Motor Estadístico de IA (35%)**: Simula el partido cruzando múltiples variables internas.
-3. **Intuición del Usuario (25%)**: Permite inyectar sesgos humanos (probabilidades de victoria y predicción de goles Over/Under 2.5) para alterar el cálculo matemático puro y corregir desviaciones algorítmicas.
+Un orquestador predictivo avanzado para partidos de fútbol, diseñado específicamente para proyectar resultados de la Copa Mundial 2026. Combina inteligencia artificial, datos del mercado financiero y la intuición humana.
 
 ---
 
-## ⚙️ Configuración de Partidos (`orquestador.py`)
+## 🚀 Guía Rápida: Cómo Utilizar el Sistema
 
-El núcleo del sistema reside en el bloque `if __name__ == "__main__":` dentro del archivo `orquestador.py`. Aquí se definen los parámetros exactos del partido a simular mediante un diccionario maestro de configuración.
+El sistema fue diseñado para ser utilizado desde la consola de comandos. Como analista o entrenador, tu flujo de trabajo es muy sencillo:
 
-### 1. Variables del Usuario (El Sesgo del Analista)
-El usuario puede definir su pronóstico base que afectará el 25% del peso final de la simulación:
-```python
-"Prediccion_Usuario": {"L": 0.55, "E": 0.30, "V": 0.15},
-"Prediccion_Usuario_Under25": 0.60, # 60% de probabilidades de que haya menos de 2.5 goles
-```
-*El sistema calculará automáticamente el "Efecto Rebote" al contrastar este sesgo de goles con las estadísticas puras de Poisson.*
-
-### 2. Configuración del Equipo A y B
-Debes definir a cada equipo de forma exhaustiva para alimentar los submódulos. Ejemplo de estructura:
-
-```python
-"Equipo_A": {
-    "nombre": "Spain",
-    "xg_base": 2.4, # Goles esperados (Expected Goals) base del equipo
-    
-    # Módulo 1: Sabiduría del Mercado
-    "cuotas_casas": [(1.20, 5.50, 12.00), (1.18, 6.00, 13.50)], # (Local, Empate, Visitante)
-    "polymarket_probs": (0.80, 0.15, 0.05), # Probabilidades en el mercado de predicción descentralizado
-    
-    # Módulo 2: Contexto y Psicología
-    "contexto": {
-        "equipo": "Spain", 
-        "posicion": 1, # Posición actual en el grupo/ranking
-        "necesidad": "ganar_obligado", # Opciones: ganar_obligado, sirve_empate, sin_presion
-        "peso_camiseta": "alto", # Opciones: alto, medio, bajo
-        "estilo": "posesion" # Opciones: posesion, contragolpe, defensivo
-    },
-    
-    # Módulo 3: Táctica y Control
-    "tactica": {
-        "stats": (70.0, 8.0, 5.0, 10.0), # (Posesión %, Llegadas/Ataques, Tiros a Puerta, Córners)
-        "flex": "flexible" # Opciones: flexible (se adapta si va perdiendo) o inflexible
-    },
-    
-    # Módulo 4: Impacto de Jugadores Estrella
-    "top3": [
-        {"nombre": "Rodri", "posicion": "medio", "estado": "bueno"},
-        {"nombre": "Lamine Yamal", "posicion": "delantero", "estado": "bueno"},
-        {"nombre": "Pedri", "posicion": "medio", "estado": "lesionado"} # El motor penalizará xG si hay lesiones
-    ]
-}
-```
-
----
-
-## 📊 Submódulos del Motor Estadístico
-- **`modulo_mercado.py`**: Traduce las cuotas europeas a probabilidades porcentuales reales eliminando el margen de ganancia de las casas (Overround).
-- **`modulo_tactico.py`**: Evalúa si el estilo de un equipo neutraliza al otro (Ej: Posesión vs Muro Defensivo).
-- **`modulo_jugadores.py`**: Evalúa el "estado" de los 3 jugadores clave y suma/resta décimas de xG en consecuencia.
-- **`modulo_noticias.py`**: Cruza la base de datos local `historical_results.csv` para mostrar resultados recientes.
-- **`modulo_dinamica.py`**: Regula cómo el tiempo restante o un "Primer Gol" afectan las probabilidades en vivo (uso futuro para Live Betting).
-
-## 🚀 Uso del Panel Interactivo
-Ejecuta el orquestador principal desde la terminal:
+### 1. Ejecutar el Simulador
+Abre tu terminal (Termux, Linux o CMD) en la carpeta del proyecto y ejecuta:
 ```bash
 python orquestador.py
 ```
-El script imprimirá la historia de los equipos y luego pausará la ejecución:
-`¿Deseas modificar alguna ponderación particular? (s/n):`
-- Si respondes **`n`**: El partido se simulará de inmediato usando la configuración en el archivo `orquestador.py`.
-- Si respondes **`s`**: Entrarás al Panel de Entrenador, donde podrás modificar en consola los porcentajes globales y submódulos (ej. bajar la importancia del Mercado y subir la del Analista).
+
+### 2. Panel Interactivo
+El sistema comenzará a descargar las últimas noticias y a leer el historial de partidos. Luego se pausará y te hará una pregunta clave:
+> *¿Deseas modificar alguna ponderación particular? (s/n):*
+
+- **Si presionas `n` (No)**: El sistema correrá la simulación inmediatamente utilizando la matemática pura y te arrojará los 3 resultados exactos más probables.
+- **Si presionas `s` (Sí)**: Entrarás al "Modo Entrenador". El sistema te preguntará uno por uno si deseas cambiar los porcentajes. Podrás decirle a la máquina que le dé más importancia a tu propia intuición, o modificar tu predicción de victoria (ej. 60% Local) y tu expectativa de goles (ej. 70% menos de 2.5 goles).
+
+### 3. ¿Cómo simular un partido distinto?
+Para predecir un partido nuevo, abre el archivo `orquestador.py` con cualquier editor de texto, baja hasta el final del documento (donde dice `config = { ... }`) y cambia los datos de `Equipo_A` y `Equipo_B` por los países que van a jugar. Guarda el archivo y vuelve a ejecutar el comando del paso 1.
+
+---
+
+## 🏗️ Funcionamiento General de la Estructura
+
+El Predictor no confía en una sola fuente de la verdad. Su funcionamiento general se basa en el **consenso de tres grandes cerebros**:
+
+1. **Sabiduría del Mercado (El Dinero)**: Analiza dónde está apostando la gente real.
+2. **Motor Estadístico (La Máquina)**: Cruza números fríos, formación táctica y estado de los jugadores.
+3. **Intuición del Analista (El Humano)**: Permite que el instinto experto corrija los puntos ciegos de la máquina.
+
+El sistema recolecta la probabilidad de victoria calculada independientemente por cada uno de estos tres cerebros, las multiplica por su nivel de importancia (Ponderación) y las fusiona en un solo **Cálculo Maestro Final**. Con este cálculo, se utiliza una fórmula de **Distribución de Poisson** para transformar la probabilidad de ganar en marcadores exactos (ej. 2-1, 0-0, 3-0).
+
+---
+
+## ⚖️ Sistema de Ponderación (Los Pesos)
+
+El algoritmo toma decisiones basadas en un sistema de pesos jerárquicos. Existen 3 niveles de ponderación que puedes modificar:
+
+### 1. Ponderaciones Globales (La mezcla maestra)
+Determinan qué cerebro tiene más voz en la decisión final:
+- **Mercado:** `40.0%`
+- **Simulador IA:** `35.0%`
+- **Usuario (Analista):** `25.0%`
+
+### 2. Ponderaciones del Simulador IA (Subgrupos)
+Dentro del 35% que le toca a la máquina, esta divide su análisis en tres sub-criterios:
+- **Módulo de Estrellas (M4):** `40.0%` (El peso individual de los mejores jugadores).
+- **Módulo de Contexto (M2):** `35.0%` (La presión psicológica del partido).
+- **Módulo Táctico (M3):** `25.0%` (Posesión del balón y estilos de juego).
+
+### 3. Ponderaciones Internas de Módulos
+Ejemplo en el Módulo de Mercado (M1), el sistema evalúa a las casas tradicionales con un `70%` de peso, pero reserva un `30%` para los mercados predictivos descentralizados (Polymarket), que suelen ser más precisos.
+
+---
+
+## 🧩 Detalle Técnico: Cómo funciona cada Módulo
+
+Si deseas auditar el código, el orquestador se apoya en 6 scripts independientes:
+
+### `modulo_mercado.py` (M1: Dinero)
+Extrae las cuotas de las casas de apuestas (ej. 1.20 a favor de España). Dado que las casas inflan las cuotas para tener ganancias (Overround), este módulo utiliza matemáticas financieras para "limpiar" la cuota y extraer la probabilidad estadística real que la casa de apuestas le asigna al equipo.
+
+### `modulo_contexto.py` (M2: Psicología)
+Suma o resta décimas de gol a la predicción basándose en:
+- **Peso de Camiseta**: (Bajo, Medio, Alto) Equipos históricos reciben un bono en partidos clave.
+- **Necesidad**: Si un equipo está "Obligado a ganar" y el otro dice "Sirve el empate", el módulo asume que el segundo se encerrará atrás.
+
+### `modulo_tactico.py` (M3: Pizarra)
+Cruza los estilos de juego. Si un equipo juega a la "Posesión" contra un equipo al "Contragolpe", penaliza o premia los Goles Esperados (xG) basándose en qué bloque táctico es más eficiente frente al otro.
+
+### `modulo_jugadores.py` (M4: Estrellas)
+Analiza los 3 jugadores más importantes definidos en la configuración. 
+- Al Jugador 1 le asigna un `15%` de impacto.
+- Al Jugador 2 un `10%`.
+- Al Jugador 3 un `5%`.
+Si el Jugador 1 está marcado como `"lesionado"`, el sistema restará drásticamente la capacidad goleadora del equipo.
+
+### `modulo_dinamica.py` (M5: Eventos de Partido)
+Se encarga de inyectar caos estadístico. Regula qué probabilidades tiene de abrirse el partido basándose en la intensidad de los primeros minutos y calcula qué equipo es más propenso a marcar el "Primer Gol".
+
+### `modulo_noticias.py` (M6: Inteligencia Previa)
+Es un módulo de scraping e historia. Busca en la base de datos `historical_results.csv` para imprimir los resultados recientes. Además, puede conectarse a Google News RSS para arrojar los últimos 3 titulares de prensa de cada país, dándole al usuario un pulso sobre lesiones, suspensiones o crisis de última hora antes de que ingrese su intuición.
